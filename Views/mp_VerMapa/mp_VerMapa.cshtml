@@ -1,0 +1,26 @@
+﻿@{
+    Layout = null;
+}
+
+<style type="text/css">
+    .glass {
+        border-radius: 0.5em;
+        padding: 0.5em; /* From https: //css.glass */
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 0.5em;
+        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        backdrop-filter: blur(5px);
+        -webkit-backdrop-filter: blur(5px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+    }    
+</style>
+
+<div style="position: absolute;top: 1.25em;left: 1.25em;z-index: 1;font-size: 1em;">
+    <div id="Semaforo" class="shadow glass">
+    </div>
+</div>
+
+<div id="map">
+
+</div>
+<script src="~/js/mp_vermapa.js"></script>
