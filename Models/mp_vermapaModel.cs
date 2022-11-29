@@ -18,8 +18,9 @@
             public string geoname { get; set; }
             public string x { get; set; }
             public string y { get; set; }
-            public string cod { get; set; }
+            //public string cod { get; set; } 
             public string valorRenta { get; set; }
+            // public int color { get; set; }// Determinado por el nivel peligrosidad
             public string grupodelictivo { get; set; }
             public string valorAlivian { get; set; }
             public int estadoRenta { get; set; }

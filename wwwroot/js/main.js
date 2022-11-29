@@ -2,6 +2,7 @@
     main: {
         BD: 0,
         companyid: 0,
+        userid: 0,
         init: function () {
             var $this = this;
             setTimeout(function () {
@@ -34,9 +35,12 @@
             
             $this.BD = parseInt($this.getUrlparam("BD"));
             $this.companyid = parseInt($this.getUrlparam("companyid"));
+            $this.userid = parseInt($this.getUrlparam("userid"));
 
             $this.BD = isNaN($this.BD) ? 0 : $this.BD;
             $this.companyid = isNaN($this.companyid) ? 0 : $this.companyid;
+            $this.userid = isNaN($this.userid) ? 0 : $this.userid;
+
         }
     }
 });

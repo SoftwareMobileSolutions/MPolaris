@@ -21,7 +21,7 @@ namespace mpolaris.Controllers
             });
         }
 
-        [HttpGet]
+        [HttpGet] //BD: 0 = Kontrol, 1 = Bluefenyx
         public async Task<JsonResult> Get_peligrosidadDelictiva(int BD, int companyid)
         {
             var data = await Imp_vermapa.Get_peligrosidadDelictiva(BD, companyid);
