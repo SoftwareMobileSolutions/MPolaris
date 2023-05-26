@@ -1,0 +1,319 @@
+﻿<div id="Grid__configEventosDelictivos"></div>
+<p class="font-italic">Presione doble click sobre una fila para modificar o eliminar su valor</p>
+
+<!--  id="template_grid_configEventosDelictivos" es el html que se muestra en los botones de arriba del grid, kendo tambien exige una estructura como esta para poderse mostrar los botones de exportar PDF y exportar a Excel, el solito sabe que le pertenece al grid donde se le da click, la libreria js lo vincula -->
+<script id="template_grid_configEventosDelictivos" type="text/x-kendo-template">
+    <button type="button" class="k-grid-excel k-button k-button-md k-rounded-md k-button-solid k-button-solid-base"><span class="k-icon k-i-file-excel k-button-icon"></span><span class="k-button-text">Exportar a Excel</span></button>
+    <button type="button" class="k-grid-pdf k-button k-button-md k-rounded-md k-button-solid k-button-solid-base"><span class="k-icon k-i-file-pdf k-button-icon"></span><span class="k-button-text">Exportar a PDF</span></button>
+    <span class="k-spacer"></span>
+    <span class="k-searchbox k-input k-input-md k-rounded-md k-input-solid k-grid-search">
+        <span class="k-input-icon k-icon k-i-search"></span><input autocomplete="off" placeholder="Buscar..." title="Search..." class="k-input-inner" />
+    </span>
+</script>
+
+<script type="text/javascript">
+    function fn_refrescarGrid() { //Cuando se le da click la segunda pestaña el gridno se muestra bien por lotanto hayqueejecutar la funcion refresh para que actualice su alto y largo
+        setTimeout(function () {
+  
+            $("[id='Grid__configEventosDelictivos']").data("kendoGrid").refresh();
+            //$("[id='Grid__configEventosDelictivos'] .k-grid-content").height($("#tab2").height() - 280);
+        }, 500); //* 500 son milisegundos que esel tiempo en quese tarda en aparecer el contenido de lapestaña a la que seledael click, se ejecutara 0.5 segundos despues que le den click a la segunda pestaña que esta en index.cshtml
+    }
+
+    var intoFirtsTime = true;
+    
+    var touchtime = 0;
+
+    function get_Grid__configEventosDelictivos() {
+        kendo.ui.progress($("[id='Grid__configEventosDelictivos']"), true);
+            var arg = {
+                companyid: $.main.companyid,
+                BD: $.main.BD,
+                userid: $.main.userid
+               // fechaini: /*moment().format("YYYY")*/"2022" + "0101 23:59:59",
+               // fechafin: /*moment().format("YYYY")*/"2022" + "1231 00:00:00",
+               // geozoneid: idgeo
+            };
+        $.post("adGruposDelictivos/get_DataGrid", arg, function (d) {
+            //console.log(d);
+            //Convirtiendo a tipo DateTime en js para que sepuedan hacer bien los filtros de lo contrario mostraria error
+            for (var i = d.length; i--;) {
+                d[i]["fecha"] = moment(d[i]["fecha"])._d;
+               // d[i]["fecha_nac"] = moment(d[i]["fecha_nac"])._d;
+            }
+            
+           
+            //$("[id='Grid__configEventosDelictivos']").data("kendoGrid").dataSource.data(d);
+            create_Grid__configEventosDelictivos(d);
+            if (intoFirtsTime) {
+                intoFirtsTime = false;
+                return false;
+            }
+
+            if (!d.length) {
+               
+                  Swal.fire(
+                      'Actualmente, no existen registros !',
+                      '',
+                      'warning'
+                  )
+            }
+
+        }).always(function() {
+            kendo.ui.progress($("[id='Grid__configEventosDelictivos']"), false);
+        });
+    }
+
+
+    var Grid__configEventosDelictivos_dataitem = [];
+    function create_Grid__configEventosDelictivos(datos) {
+        $("[id='Grid__configEventosDelictivos']").html("");
+        $("[id='Grid__configEventosDelictivos']").kendoGrid({
+            mobile: true,
+            //toolbar: ["excel", "pdf", "search"],
+            toolbar: [
+                { template: kendo.template($("[id='template_grid_configEventosDelictivos']").html()) }
+            ],
+            pdf: {
+                allPages: true,
+                avoidLinks: true,
+                paperSize: "A4",
+                landscape: true,
+                repeatHeaders: true,
+                margin: { top: "2cm", left: "1cm", right: "1cm", bottom: "1cm" },
+                scale: 0.8,
+                fileName: "Reporte_configEventosDelictivoss.pdf"
+            },
+            excel: {
+                fileName: "Reporte_configEventosDelictivoss.xlsx",
+                filterable: true,
+                allPages: true
+            },
+            dataSource: {
+                pageSize: 50,
+                schema: {
+                    model: {
+                        fields: {
+                            incidentenombre: { type: "string" },
+                            fecha: { type: "date" },
+                            costo: { type: "number" },
+                            nombregeozona: { type: "string" },
+                            alias: { type: "string" },
+                            placa: { type: "string" },
+                            nombremotorista: { type: "string" },
+                            telefonomotorista: { type: "string" },
+                            descripcion: { type: "string" },
+                            estado: { type: "string" },
+                            /*
+                            id_configEventosDelictivos: { type: "number" },
+                            nombre: { type: "string" },
+                            apellido: { type: "string" },
+                            fecha_nac: { type: "date" },
+                            dui: { type: "string" },
+                            num_dosis: { type: "number" },
+                            direccion: { type: "string" },
+                            tel: { type: "string" }
+                            */
+                        }
+                    }
+                }
+            },
+            filterable: {
+                extra: false
+            },
+            filterable: false,
+            height: 450,
+            sortable: true,
+            groupable: false,
+            columnMenu: false,
+            reorderable: true,
+            resizable: true,
+            scrollable: true,
+            pageable: {
+                allPages: true,
+                pageSizes: true,
+                previousNext: true,
+                input: false,
+                numeric: false,
+                refresh: false,
+                info: true
+            },
+            selectable: "single, row",
+            change: function (e) {
+                Grid__configEventosDelictivos_dataitem = e !== null ? e.sender.dataItem(e.sender.select()) : null;
+           
+            },
+            mobile: true,
+            dataBound: function () {
+                var data = [];
+                var grid = this;
+                var dataSource = grid.dataSource;
+                var allData = dataSource.data();
+                var filters = dataSource.filter();
+                var query = new kendo.data.Query(allData);
+                data = query.filter(filters).data;
+
+
+                $("[id='Grid__configEventosDelictivos'] .k-grid-content tbody tr:not(.k-grouping-row)").on("click", function (e) {
+                    if (touchtime == 0) {
+                        // set first click
+                        touchtime = new Date().getTime();
+                    } else {
+                        // compare first click to this click and see if they occurred within double click threshold
+                        if (((new Date().getTime()) - touchtime) < 800) {
+                            // double click occurred
+                            
+                             if (!$(e.target).is(":input")) {
+                                var ds = Grid__configEventosDelictivos_dataitem;
+                                $("#mp_modalgrideventos").modal("show");
+                                setValuesModal();
+                               // fn_Actualizar_configEventosDelictivos();
+                            }
+
+
+                            touchtime = 0;
+                        } else {
+                            // not a double click so set as a new first click
+                            touchtime = new Date().getTime();
+                        }
+                    }
+                });
+
+/*
+                $("[id='Grid__configEventosDelictivos'] .k-grid-content tbody tr:not(.k-grouping-row)").click(function (e) {
+                    if (!$(e.target).is(":input")) {
+                        var ds = Grid__configEventosDelictivos_dataitem;
+                        $("#mp_modalgrideventos").modal("show");
+                       // fn_Actualizar_configEventosDelictivos();
+                    }
+                });
+               */
+               // $("[id='Grid__configEventosDelictivos'] .k-grid-content").height($("#tab2").height() - 280);
+            },
+            columns:
+                [
+                    /*
+                            incidentenombre: { type: "string" },
+                            costo: { type: "number" },
+                            nombregeozona: { type: "string" },
+                            alias: { type: "string" },
+                            placa: { type: "string" },
+                            nombremotorista: { type: "string" },
+                            telefonomotorista: { type: "string" },
+                            descripcion: { type: "string" }
+                    
+                    */
+                   {
+                        field: "fecha",
+                        title: "Fecha",
+                        format: "{0:yyyy-MM-dd HH:mm:ss}",
+                        width: 180
+                    },
+                    {
+                        field: "incidentenombre",
+                        title: "Incidente",
+                        width: 150
+                    },
+                     {
+                        field: "costo",
+                        title: "Costo",
+                        width: 150
+                    },
+                    {
+                        field: "nombregeozona",
+                        title: "Zona Delictiva",
+                        width: 150
+                    },
+                    {
+                        field: "estado",
+                        title: "Estado",
+                        width: 180
+                    },
+                    {
+                        field: "alias",
+                        title: "Alias",
+                        width: 150
+                    },
+                    {
+                        field: "placa",
+                        title: "Placa",
+                        width: 150
+                    },
+                    {
+                        field: "nombremotorista",
+                        title: "Motorista",
+                        width: 150
+                    },
+                    {
+                        field: "telefonomotorista",
+                        title: "Teléfono",
+                        width: 150
+                    },
+                    {
+                        field: "contactovecino",
+                        title: "Contacto Vecino",
+                        width: 180
+                    },
+                    {
+                        field: "descripcion",
+                        title: "Detalle",
+                        width: 5000
+                    }
+                    
+                    /*{
+                        field: "id_configEventosDelictivos",
+                        title: "ID _configEventosDelictivos",
+                        width: 150
+                    },
+                    {
+                        field: "fecha_ingreso",
+                        title: "Fecha de Ingreso",
+                        format: "{0:yyyy-MM-dd HH:mm:ss}",
+                        width: 180
+                    },
+                    {
+                        field: "dui",
+                        title: "DUI",
+                        width: 150
+                    },
+                    {
+                        field: "nombre",
+                        title: "Nombre",
+                        width: 200
+                    },
+                    {
+                        field: "apellido",
+                        title: "Apellido",
+                        width: 200
+                    },
+                    {
+                        field: "fecha_nac",
+                        title: "Fecha de Nacimiento",
+                        format: "{0:yyyy-MM-dd}",
+                        width: 230
+                    },
+                    {
+                        field: "num_dosis",
+                        title: "Nº Dosis",
+                        width: 150
+                    },
+                    {
+                        field: "tel",
+                        title: "Teléfono",
+                        width: 150
+                    },
+                    {
+                        field: "direccion",
+                        title: "Dirección",
+                        width: 250
+                    }*/
+                ]
+        });
+        $("[id='Grid__configEventosDelictivos']").data("kendoGrid").dataSource.data(datos);
+    }
+    create_Grid__configEventosDelictivos([]); //Crear el grid la primera vez sin datos
+   
+    get_Grid__configEventosDelictivos(); //Obtener la data cuando carga
+</script>
+
+@await Html.PartialAsync("~/Views/adGruposDelictivos/adgrupodelictivo_modalGrid.cshtml")

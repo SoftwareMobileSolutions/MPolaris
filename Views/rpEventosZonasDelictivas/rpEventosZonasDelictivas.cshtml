@@ -1,0 +1,304 @@
+﻿
+@{
+    Layout = null;
+}
+
+<style type="text/css">
+    #div_scrollcontainter, #div_treemobiles {
+        overflow: auto;
+    }
+    #div_treemobiles{
+        background-color: #f6f6f6;
+        border-radius: 0.5em;
+        padding: 0.5em;
+        padding-bottom: 1em;
+    }
+    .bold {
+        font-weight: 500;
+    }
+
+    .k-list-container.k-popup.k-group.k-reset.k-multiple-selection.k-popup-dropdowntree [data-role="treeview"] ul .k-treeview-leaf-text {
+        white-space: break-spaces !important;
+    }
+
+    [role="region"] {
+        left: 18px !important;
+    }
+</style>
+
+<style type="text/css" id="estilopopddltree">
+    
+</style>
+
+<div class="card w-100 h-100">
+    <div class="card-header">
+        <h5 class="card-title">
+            Reporte de eventos delictivos
+        </h5>
+        <ul class="nav nav-tabs card-header-tabs" data-bs-tabs="tabs">
+            <li class="nav-item">
+                <a class="nav-link active" aria-current="true" data-bs-toggle="tab" href="#tab1">Generar Información</a>
+            </li>
+        </ul>
+    </div>
+    <div class="card-body tab-content">
+        <div class="tab-pane active" id="tab1">
+            <div class="row" id="div_scrollcontainter">
+                <div class="col-lg-12">
+                    <div class="row mb-2" >
+                        <div class="col-12">
+                            <label style="display: inline-block;text-align: left;width: 100%;" class="bold">Seleccione uno o varios vehículos</label>
+                        </div>
+                        <div class="col-12" id="div_treemobiles">
+                            @*<button type="button" id="btn_agrgarDelictivos" class="btn btn-primary w-100" onclick="Ingresar_DDLEventoZonaDelictiva();">Agregar</button>*@
+                            @*@await Html.PartialAsync("~/Views/rpeventoszonasdelictivas/ddl_geozonas.cshtml")*@
+                    
+                            
+                            <div id="TreeSubflotas"></div>
+                    
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-12">
+                            <label style="display: inline-block;" class="bold">Inicio</label>
+                            <input id="fecha_inirp" title="Fecha" />
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-12">
+                            <label style="display: inline-block;" class="bold">Fin</label>
+                            <input id="fecha_finrp" title="Fecha" />
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-12">
+                            <label style="display: inline-block;" class="bold">Geozonas</label>
+                            <input id="DDL_geoTree" style="width: 100%;" />
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-12">
+                            <label style="display: inline-block;" class="bold">Motoristas</label>
+                            <input id="DDL_motoristaTree" style="width: 100%;" />
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-12">
+                            <label style="display: inline-block;" class="bold">Tipo Incidentes</label>
+                            <input id="DDL_incidentesTree" style="width: 100%;" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-4">
+                <div style="text-align:right;" class="col-12 mt-2 mb-4">
+                    <button type="button" class="btn btn-sm btn-primary w-100" onclick="get_Grid_rpeventosdelictivos();">Generar</button>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+</div>
+
+@await Html.PartialAsync("~/Views/rpeventoszonasdelictivas/rpeventoszonas_modal.cshtml")
+
+<script type="text/javascript">
+    function getTreeView() {
+        var arg = {
+            companyid: $.main.companyid,
+            BD: $.main.BD,
+            userid: $.main.userid
+        }; 
+        $.get("rpEventosZonasDelictivas/ObtenerSubflotaVehiculos", arg, function(d) {
+            generateTreeView(d);
+        });
+    }
+    getTreeView();
+
+    function fn_DDLTreesAjustesDisenio() {
+        var wWidth = $(window).width() - 34;
+        var strWidth = `[role="region"] .k-list-container.k-popup.k-group.k-reset.k-multiple-selection.k-popup-dropdowntree
+                 {
+                        width: ${wWidth}px !important;
+                }
+                `;
+        $("#estilopopddltree").html(strWidth);
+        //$("#DDL_incidentesTree").width($(window).width() - 44);
+    }
+    fn_DDLTreesAjustesDisenio();
+
+    function generateTreeView(data) {
+        $("#TreeSubflotas").kendoTreeView({
+            checkboxes: {
+                checkChildren: true,
+                //change: TreeSubflotas_Change,
+            },
+            mobile: true,
+            dataBound: TreeSubflotas_DataBound,
+            check: onCheck,
+            dataSource: data
+        });
+    }
+
+    function checkedNodeIds(nodes, checkedNodes) {
+        for (var i = 0; i < nodes.length; i++) {
+            if (nodes[i].checked) {
+                nodes[i].codigo.charAt(0) === "m" && checkedNodes.push(parseInt(nodes[i].codigo.substring(1)));
+            }
+
+            if (nodes[i].hasChildren) {
+                checkedNodeIds(nodes[i].children.view(), checkedNodes);
+            }
+        }
+    }
+
+    var TreeMobiles = [];
+    function onCheck() {
+        var checkedNodes = [],
+            treeView = $("#TreeSubflotas").data("kendoTreeView"),
+            message;
+
+        checkedNodeIds(treeView.dataSource.view(), checkedNodes);
+
+        if (checkedNodes.length > 0) {
+            message = "IDs of checked nodes: " + checkedNodes.join(",");
+        } else {
+            message = "No nodes checked.";
+        }
+
+        TreeMobiles = checkedNodes;
+        //  console.log(TreeMobiles);
+    }
+
+    function TreeSubflotas_DataBound() {
+        this.collapse(".k-item");
+        var lif = this;
+        setTimeout(function() {
+            lif.expand("li:first");
+        }, 200);
+    }
+
+    //GEOZONAS
+    function createDDL_geoTree() {
+        $("#DDL_geoTree").kendoDropDownTree({
+            dataSource: [],
+            checkboxes: true,
+            checkAll: true,
+            checkAllTemplate: "<label>Todos</label>",
+            autoClose: false,
+            filter: "contains",
+            delay: 1000,
+            minLength: 3,
+            rounded: "solid",
+            dataTextField: "nombre",
+            dataValueField: "id",
+            height: 200,
+            enforceMinLength: true,
+            autoWidth: true,
+            fillMode: "solid",
+            placeholder: "[Seleccione una o varias Opciones]",
+            tagMode: "single"
+        });
+    }
+    createDDL_geoTree();
+
+    function getGeozonas() {
+        var arg = {
+            companyid: $.main.companyid,
+            BD: $.main.BD,
+            userid: $.main.userid
+        };
+        $.get("rpEventosZonasDelictivas/Get_Geozonas", arg, function (d) {
+            $("#DDL_geoTree").data("kendoDropDownTree").dataSource.data(d);
+            //fn_generarDDLGrid(d);
+        });
+    }
+    getGeozonas();
+
+    //MOTORISTA
+    function CreateDDL_motoristaTree() {
+        $("#DDL_motoristaTree").kendoDropDownTree({
+            dataSource: [],
+            checkboxes: true,
+            checkAll: true,
+            checkAllTemplate: "<label>Todos</label>",
+            autoClose: false,
+            filter: "contains",
+            delay: 1000,
+            minLength: 3,
+            rounded: "solid",
+            dataTextField: "nombre",
+            dataValueField: "id",
+            height: 200,
+            enforceMinLength: true,
+            autoWidth: true,
+            fillMode: "solid",
+            placeholder: "[Seleccione una o varias Opciones]",
+            tagMode: "single"
+        });
+    }
+    CreateDDL_motoristaTree();
+
+    function getMotorista() {
+        var arg = {
+            companyid: $.main.companyid,
+            BD: $.main.BD,
+            userid: $.main.userid
+        };
+        $.get("rpEventosZonasDelictivas/Get_Motoristas", arg, function (d) {
+//            console.log(d);
+            $("#DDL_motoristaTree").data("kendoDropDownTree").dataSource.data(d);
+        });
+    }
+    getMotorista();
+
+    //Incidentes
+    function CreateDDL_incidentesTree() {
+        $("#DDL_incidentesTree").kendoDropDownTree({
+            dataSource: [],
+            checkboxes: true,
+            checkAll: true,
+            checkAllTemplate: "<label>Todos</label>",
+            autoClose: false,
+            filter: "contains",
+            delay: 1000,
+            minLength: 3,
+            rounded: "solid",
+            dataTextField: "nombre",
+            dataValueField: "id",
+            height: 200,
+            enforceMinLength: true,
+            autoWidth: true,
+            fillMode: "solid",
+            placeholder: "[Seleccione una o varias Opciones]",
+            tagMode: "single"
+        });
+    }
+    CreateDDL_incidentesTree();
+
+    function getIncidentes() {
+        var arg = {
+            companyid: $.main.companyid,
+            BD: $.main.BD,
+            userid: $.main.userid
+        };
+        $.get("rpEventosZonasDelictivas/getincidentescat", arg, function (d) {
+//            console.log(d);
+            $("#DDL_incidentesTree").data("kendoDropDownTree").dataSource.data(d);
+        });
+    }
+    getIncidentes();
+
+    function reizeDivs() {
+        $("#div_scrollcontainter").height($(window).height()-180);
+        $("#div_treemobiles").height($(window).height() - 510);
+    }
+
+    reizeDivs();
+</script>
+

@@ -1,0 +1,35 @@
+﻿
+@{
+    Layout = null;
+}
+<style type="text/css">
+    .modal-backdrop.fade.show {
+        display: none;
+    }
+</style>
+
+<div class="modal fade" id="mp_modaleventos" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title"> Eventos </h5>
+      </div>
+      <div class="modal-body">
+        @await Html.PartialAsync("~/Views/mp_vermapa/mp_gridEventosAnuales.cshtml")
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="$('#mp_modaleventos').modal('hide');">Cerrar</button>
+        @*<button type="button" class="btn btn-primary">Save changes</button>*@
+      </div>
+    </div>
+  </div>
+</div>
+
+@*
+<div class="modal fade" id="mp_modaleventos" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            contenido
+        </div>
+    </div>
+</div>*@

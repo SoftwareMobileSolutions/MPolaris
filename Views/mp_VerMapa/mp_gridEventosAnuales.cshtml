@@ -1,0 +1,201 @@
+﻿
+@{
+    Layout = null;
+}
+<div class="row">
+    <div class="col-12">
+         <label style="display: inline-block;">Inicio</label>
+        <input id="fecha_inirp" title="Fecha" />
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <label style="display: inline-block;">Fin</label>
+        <input id="fecha_finrp" title="Fecha" />
+    </div>
+</div>
+
+<div class="row">
+    <div style="text-align:right;" class="col-12 mt-2 mb-4">
+        <button type="button" class="btn btn-sm btn-primary w-100" onclick="fn_generarEventosAnuales();">Generar</button>
+    </div>
+</div>
+
+
+
+<div id="Grid_eventosAnuales"></div>
+<script id="template_eventosAnuales" type="text/x-kendo-template">
+    <button type="button" class="k-grid-excel k-button k-button-md k-rounded-md k-button-solid k-button-solid-base"><span class="k-icon k-i-file-excel k-button-icon"></span><span class="k-button-text">Exportar a Excel</span></button>
+    <button type="button" class="k-grid-pdf k-button k-button-md k-rounded-md k-button-solid k-button-solid-base"><span class="k-icon k-i-file-pdf k-button-icon"></span><span class="k-button-text">Exportar a PDF</span></button>
+    <span class="k-spacer"></span>
+    <span class="k-searchbox k-input k-input-md k-rounded-md k-input-solid k-grid-search">
+        <span class="k-input-icon k-icon k-i-search"></span><input autocomplete="off" placeholder="Buscar..." title="Search..." class="k-input-inner" />
+    </span>
+</script>
+<script type="text/javascript">
+    var Grid_eventosAnuales_dataitem = [];
+    function create_Grid_eventosAnuales(datos) {
+        $("[id='Grid_eventosAnuales']").html("");
+        $("[id='Grid_eventosAnuales']").kendoGrid({
+            mobile: true,
+            //toolbar: ["excel", "pdf", "search"],
+            toolbar: [
+                { template: kendo.template($("[id='template_eventosAnuales']").html()) }
+            ],
+            pdf: {
+                allPages: true,
+                avoidLinks: true,
+                paperSize: "A4",
+                landscape: true,
+                repeatHeaders: true,
+                margin: { top: "2cm", left: "1cm", right: "1cm", bottom: "1cm" },
+                scale: 0.8,
+                fileName: "ReporteAnual_"+ moment("YYYYMMDD_HHmmss") +".pdf"
+            },
+            excel: {
+                fileName:  "ReporteAnual_"+ moment("YYYYMMDD_HHmmss") +".xlsx",
+                filterable: true,
+                allPages: true
+            },
+            dataSource: {
+                pageSize: 50,
+                schema: {
+                    model: {
+                        fields: {
+                            asunto: { type: "string" },
+                            estado: { type: "string" },
+                            fecha: { type: "date" },
+                            geo: { type: "string" },
+                            incidenteid: { type: "number" },
+                            motorista: { type: "string" },
+                            placa: { type: "string" },
+                            vehiculo: { type: "string" },
+                            vehiculo_apoyo: { type: "string" },
+                            costo: { type: "number" }
+                            /*idpaciente: { type: "number" },
+                            nombre: { type: "string" },
+                            apellido: { type: "string" },
+                            fecha_nac: { type: "date" },
+                            dui: { type: "string" },
+                            num_dosis: { type: "number" },
+                            direccion: { type: "string" },
+                            tel: { type: "string" }*/
+                        }
+                    }
+                }
+            },
+            filterable: {
+                extra: false
+            },
+            filterable: false,
+            height: 450,
+            sortable: true,
+            groupable: false,
+            columnMenu: false,
+            reorderable: true,
+            resizable: true,
+            scrollable: true,
+            pageable: {
+                allPages: true,
+                pageSizes: true,
+                previousNext: true,
+                input: false,
+                numeric: false,
+                refresh: false,
+                info: true
+            },
+            selectable: "single, row",
+            change: function (e) {
+                Grid_eventosAnuales_dataitem = e !== null ? e.sender.dataItem(e.sender.select()) : null;
+            },
+            dataBound: function () {
+                var data = [];
+                var grid = this;
+                var dataSource = grid.dataSource;
+                var allData = dataSource.data();
+                var filters = dataSource.filter();
+                var query = new kendo.data.Query(allData);
+                data = query.filter(filters).data;
+
+                $("[id='Grid_eventosAnuales'] .k-grid-content tbody tr:not(.k-grouping-row)").dblclick(function (e) {
+                    if (!$(e.target).is(":input")) {
+                        var ds = Grid_eventosAnuales_dataitem;
+                       
+                    }
+                });
+
+            },
+            //******** TERMINAR ESTO ***************
+            columns:
+                [
+                    {
+                        field: "fecha",
+                        title: "Fecha",
+                        format: "{0:yyyy-MM-dd HH:mm:ss}",
+                        width: 180
+                    },
+                    {
+                        field: "motorista",
+                        title: "Motorista",
+                        width: 150
+                    },
+                    {
+                        vehiculo: "nombre",
+                        title: "Equipo",
+                        width: 200
+                    },
+                    {
+                        field: "placa",
+                        title: "Placa",
+                        width: 120
+                    },
+                    {
+                        field: "vehiculo_apoyo",
+                        title: "Vehículo Apoyo",
+                        width: 150
+                    },
+                   
+                    {
+                        field: "costo",
+                        title: "Costo",
+                        width: 150
+                    },
+                    {
+                        field: "asunto",
+                        title: "Descrión",
+                        width: 5000
+                    },
+
+                ]
+        });
+        $("[id='Grid_eventosAnuales']").data("kendoGrid").dataSource.data(datos);
+    }
+    create_Grid_eventosAnuales([]);
+
+    //Controles Fecha
+    function crearFechas() {
+        $("#fecha_inirp").kendoDateTimePicker({
+            value: moment().startOf('year')._d,
+            dateInput: true,
+            format: "yyyy/MM/dd HH:mm:ss"
+        });
+        $("#fecha_finrp").kendoDateTimePicker({
+            value: moment().endOf('year')._d,
+            dateInput: true,
+            format: "yyyy/MM/dd HH:mm:ss"
+        });
+    }
+    crearFechas();
+
+    function fn_generarEventosAnuales() {
+        $.mp_map.lastdatageoGenerar["fechaini"] = moment($("#fecha_inirp").val()).format("YYYYMMDD HH:mm:ss");
+        $.mp_map.lastdatageoGenerar["fechafin"] = moment($("#fecha_finrp").val()).format("YYYYMMDD HH:mm:ss");
+
+        var arg = $.mp_map.lastdatageoGenerar;
+        $.get("mp_VerMapa/getEventosAnuales", arg, function (d) {
+                //console.log(d);
+                create_Grid_eventosAnuales(d);
+        });
+    }
+</script>

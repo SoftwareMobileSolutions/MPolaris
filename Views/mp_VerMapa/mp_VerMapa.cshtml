@@ -1,0 +1,122 @@
+﻿@{
+    Layout = null;
+}
+
+<style type="text/css">
+    .glass {
+        border-radius: 0.5em;
+        padding: 0.5em; /* From https: //css.glass */
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 0.5em;
+        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        backdrop-filter: blur(5px);
+        -webkit-backdrop-filter: blur(5px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+
+    /* INFOWINDOWS */
+    .gm-style-iw__ {
+        width: 450px !important;
+        top: 15px !important;
+        /*left: 0px !important;*/
+        left: 15px !important;
+        background-color: #fff;
+        border-radius: 0px 0px 4px 4px !important;
+        /*box-shadow: 0 1px 6px rgba(178, 178, 178, 0.6);*/
+        box-shadow: 0 0 6px rgba(0,33,50,.1), 0 7px 25px rgba(17,38,60,.4) !important;
+    }
+
+
+    .iw-title_ {
+        /*font-family: 'Open Sans Condensed', sans-serif;*/
+        font-size: 14px;
+        font-weight: 400;
+        padding: 10px;
+        height: 35px;
+        background-color: #3A4B55;
+        color: white;
+        margin: 0;
+        border-radius: 2px 2px 0 0;
+        text-align: left;
+    }
+
+    .iw-content_ {
+        font-size: 13px;
+        /* line-height: 18px;*/
+        font-weight: 400;
+        margin-right: 1px;
+        /*padding: 5px;*/
+        padding-bottom: 2px;
+        max-height: 440px;
+        /* overflow-y: auto;*/
+        overflow-y: hidden;
+        overflow-x: hidden;
+        z-index: 2;
+        position: relative;
+    }
+
+    /* INFOWINDOW TABLE */
+    .info table, .info td {
+        border: 1px solid #ddd;
+        font-family: 'Open Sans', sans-serif;
+        font-size: 12px;
+        vertical-align: middle;
+    }
+
+        .info td:nth-child(n+1) {
+            background: #fcfcfc;
+            width: 110px;
+            padding: 0px;
+            padding-left: 4px;
+            font-weight: 600;
+            font-family: 'Open Sans', sans-serif;
+            font-size: 12px;
+            text-align: left;
+            padding-top: 0.25em;
+            padding-bottom: 0.25em;
+            padding-right: 0.25em;
+        }
+
+        .info td:nth-child(n+2) {
+            background: #FFF !important;
+            width: 365px;
+            padding: 0px;
+            padding-left: 4px;
+            font-weight: 400;
+            font-family: 'Open Sans', sans-serif;
+            font-size: 12px;
+            padding-top: 0.25em;
+            padding-bottom: 0.25em;
+            padding-right: 0.25em;
+        }
+
+    .infotitle_i {
+        cursor: pointer;
+        position: relative;
+        top: -4px;
+        right: 2px;
+        display: inline-block;
+    }
+
+        .infotitle_i:hover {
+            font-size: 17px;
+        }
+
+    .infotitle {
+        display: inline-block;
+        position: relative;
+        top: -2px;
+        left: 4px;
+    }
+
+</style>
+
+@await Html.PartialAsync("~/Views/mp_vermapa/mp_eventosanuales.cshtml")
+
+<div style="position: absolute;top: 1.25em;left: 1.25em;z-index: 1;font-size: 0.75em;">
+    <div id="Semaforo" class="shadow glass"></div>
+</div>
+
+<div id="map"></div>
+<script src="~/js/mp_vermapa.js"></script>

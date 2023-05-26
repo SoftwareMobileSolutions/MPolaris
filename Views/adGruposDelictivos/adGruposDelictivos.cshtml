@@ -1,0 +1,647 @@
+﻿@{
+    Layout = null;
+}
+
+<style type="text/css">
+    .lf {
+        text-align: left;
+    }
+
+    [id^='tab1'] > .row .row:nth-child(2n+2) {
+        padding-bottom: 1em;
+    }
+
+    #content_tab1  {
+       /* max-height: 15em;*/
+        overflow-y: scroll;
+    }
+
+    .checkbox-lg .custom-control-label::before,
+    .checkbox-lg .custom-control-label::after {
+        top: .8rem;
+        width: 1.55rem;
+        height: 1.55rem;
+    }
+
+    .checkbox-lg .custom-control-label {
+        padding-top: 13px;
+        padding-left: 6px;
+    }
+
+
+    .checkbox-xl .custom-control-label::before,
+    .checkbox-xl .custom-control-label::after {
+        top: 1.2rem;
+        width: 1.85rem;
+        height: 1.85rem;
+    }
+
+    .checkbox-xl .custom-control-label {
+        padding-top: 23px;
+        padding-left: 10px;
+    }
+</style>
+
+<div class="card w-100 h-100">
+    <div class="card-header">
+        <h5 class="card-title">
+            Eventos Delictivos
+            @await Html.PartialAsync("~/Views/adGruposDelictivos/adgrupodelictivoMapa.cshtml")
+        </h5>
+        <ul class="nav nav-tabs card-header-tabs" data-bs-tabs="tabs">
+            <li class="nav-item">
+                <a class="nav-link active" aria-current="true" data-bs-toggle="tab" href="#tab1">Configuración</a>
+            </li>
+            <li class="nav-item" onclick="fn_refrescarGrid();">
+                <a class="nav-link" data-bs-toggle="tab" href="#tab2">Registros</a>
+            </li>
+        </ul>
+    </div>
+    <div class="card-body tab-content">
+        <div class="tab-pane active" id="tab1" >
+
+            <div class="row" id="content_tab1">
+                <div class="col-lg-12">
+                    <div class="row">
+                        <div class="col-12 lf">
+                            Tipo Incidente:
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <input id="ddltipoincidente" class="" style="width: 100%;" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12 lf">
+                            Vehículos:
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <input id="ddlvehiculos" class="" style="width: 100%;" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12 lf">
+                            Motoristas:
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <input id="ddlmotoristas" class="" style="width: 100%;" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12 lf">
+                            Fecha:
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <input id="fecha_config" title="Fecha" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12 lf">
+                            Zonas Delictivas:
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <input id="ddlzonasdelictivas" class="" style="width: 100%;" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12 lf">
+                            Costo:
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <input id="costoIncidente" type="number" value="0" min="0" max="999999" step="1" style=" width: 100%;" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12 lf">
+                            Estado:
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                             <input id="DDLEstado" style="width: 100%;" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12 lf">
+                            Etado Inconveniente:
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <input id="DDLTipoInconvenientes" style="width: 100%;" />
+
+                         
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-12 lf">
+                            Ruta:
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <input id="ddlrutas" class="" style="width: 100%;" />
+                        </div>
+                    </div>
+
+
+
+                    <div class="row">
+                        <div class="col-12 lf">
+                            Contacto Vecino:
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <span class="k-input k-textbox k-input-solid k-input-md k-rounded-md" style="">
+                                <input id="txtContactoV" maxlength="8" data-role="textbox" aria-disabled="false" placeholder="22227777" class="k-input-inner" autocomplete="off" style="width: 100%;">
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-12 lf">
+                            Detalle:
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <textarea id="txt_detallearea" data-required-msg="" data-max-msg="El valor debe estar entre 1 y 1000" style="width: 100%;"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="row pb-4">
+                        <div class="col-12 lf">
+                            <div class="custom-control custom-checkbox checkbox-lg" onclick="fn_mostrarOcultarmarkerUbicacion(this);">
+                                <input type="checkbox" class="custom-control-input" id="ubicacion" style="zoom: 150%;">
+                                <label class="custom-control-label" for="ubicacion">Ubicación con mapa del incidente</label>
+                            </div>
+                         @*   
+                            <div class="custom-control custom-checkbox">
+                                <input type="checkbox" class="custom-control-input" id="ubicacion">
+                                <label class="custom-control-label" for="ubicacion"></label>
+                            </div>
+                        *@
+
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="row mt-4">
+                <div class="col-12">
+                    <button type="button" id="btn_agrgarDelictivos" class="btn btn-primary w-100" onclick="Ingresar_DDLEventoZonaDelictiva();">Agregar</button>
+                </div>
+            </div>
+
+            
+    
+        </div>
+        <div class="tab-pane" id="tab2">
+            @await Html.PartialAsync("~/Views/adGruposDelictivos/adgrupodelictivoGridTab2.cshtml")
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var ddl_geozonasdataitem = [];
+    $.extend({
+        adGrupoDelictivo: {
+            init: function() {
+                var $this = this;
+                $this.get_create_tipoIncidente();
+                //$this.get_create_vehiculos();
+                $this.get_create_motoristas();
+                $this.get_create_zonasdelictivas();
+                $this.get_create_ruta();
+                $this.get_create_fecha();
+                $this.get_create_costos();
+                $this.get_contactovecino();
+                $this.get_create_txtArea();
+
+            },
+            dimensioncontrolllers: function() {
+                $("#content_tab1").css({ "max-height": ($(window).height() - 375) + "px" })
+            },
+            customValidateOnKeypress: function(elementId, regex) {
+                var idSplit = elementId.split(',');
+                idSplit.forEach(function (elementId) {
+                    elementId.replace(' ', '');
+                    elementId = (elementId.startsWith('#')) ? elementId : '#' + elementId;
+                    $(elementId).keypress(function (e) {
+                        var charValue = String.fromCharCode(e.keyCode);
+                        var valid = regex.test(charValue);
+                        if (!valid) { e.preventDefault(); }
+                    });
+                });
+            },
+
+            //DDL
+            id_ddltipoincidente: "ddltipoincidente",
+            id_ddlvehiculos: "ddlvehiculos",
+            id_ddlmotoristas: "ddlmotoristas",
+            id_ddlzonasdelictivas: "ddlzonasdelictivas",
+            id_ddlrutas: "ddlrutas",
+            get_create_tipoIncidente: function() {
+                var $this = this;
+                var arg = {
+                    companyid: $.main.companyid,
+                    BD: $.main.BD,
+                    userid: $.main.userid
+                };
+                $.get("adGruposDelictivos/get_cataglogo_tipoincidente", arg, function (d) {
+                    $("#" + $this.id_ddltipoincidente).kendoDropDownList({
+                        dataTextField: "nombre",
+                        dataValueField: "id",
+                        dataSource: d,
+                        index: 0,
+                        change: function(e) { 
+                    
+                        }
+                    });
+                });
+            },
+            get_create_vehiculos: function () {
+                var $this = this;
+                var arg = {
+                    companyid: $.main.companyid,
+                    BD: $.main.BD,
+                    userid: $.main.userid
+                };
+                $.get("adGruposDelictivos/Get_VehiculosSubflotas", arg, function (d) {
+                    $("#" + $this.id_ddlvehiculos).kendoDropDownList({
+                        filter: "contains",
+                        dataTextField: "placaname",
+                        dataValueField: "codigo",
+                        dataSource: d,
+                        index: 0,
+                        change: function(e) {
+                            var dataItem = this.dataItem(e.item);
+                            $("#ddlmotoristas").data("kendoDropDownList").value(dataItem.motoristaid);
+                        },
+                        dataBound: function(e) {
+                            var dataItem = this.dataItem(e.item);
+                            $("#ddlmotoristas").data("kendoDropDownList").value(dataItem.motoristaid);
+                        },
+                        group: { field: "subflota" },
+                        headerTemplate: 
+                            "<div class=\"dropdown-header k-widget k-header\">" +
+                                "<span>Placa (Alias)</span> " +
+                            "</div>",
+                        template: "<b>#: data.placa #</b> (#: data.name #)",
+                        valueTemplate: "#:data.name#"
+                    });
+                });
+            },
+            get_create_motoristas: function () {
+                var $this = this;
+                var arg = {
+                    companyid: $.main.companyid,
+                    BD: $.main.BD,
+                    userid: $.main.userid
+                };
+                $.get("adGruposDelictivos/Get_Motoristas", arg, function (d) {
+                    $this.get_create_vehiculos();
+                    $("#" + $this.id_ddlmotoristas).kendoDropDownList({
+                        dataTextField: "nombre",
+                        dataValueField: "id",
+                        dataSource: d,
+                        index: 0,
+                        change: function(e) { 
+                    
+                        }
+                    });
+
+                });
+            },
+            get_create_zonasdelictivas: function () {
+                var $this = this;
+                var arg = {
+                    companyid: $.main.companyid,
+                    BD: $.main.BD,
+                    userid: $.main.userid
+                };
+                $.get("adGruposDelictivos/Get_Geozonas", arg, function (d) {
+                    for (var i = d.length; i--;) {
+                        var dt = d[i]["detalle"];
+                        for (var j = dt.length; j--;) {
+                            dt[j]["lat"] = parseFloat(dt[j]["lat"]);
+                            dt[j]["lng"] = parseFloat(dt[j]["lng"]);
+                        }
+                    }
+
+                    $("#" + $this.id_ddlzonasdelictivas).kendoDropDownList({
+                        filter: "contains",
+                        dataTextField: "nombre",
+                        dataValueField: "id",
+                        dataSource: d,
+                        index: 0,
+                        change: function (e) {
+                            ddl_geozonasdataitem = e !== null ? e.sender.dataItem(e.sender.select()) : null;
+                            createPolygon(ddl_geozonasdataitem);
+                        },
+                        databound: function(e) 
+                        {
+                            ddl_geozonasdataitem = this.dataItem();
+                            createPolygon(ddl_geozonasdataitem);
+                        }
+                    });
+
+                });
+
+            },
+            get_create_ruta: function () {
+                var $this = this;
+                var arg = {
+                    companyid: $.main.companyid,
+                    BD: $.main.BD,
+                    userid: $.main.userid
+                };
+                $.get("adGruposDelictivos/Get_Ruta", arg, function (d) {
+                    $("#" + $this.id_ddlrutas).kendoDropDownList({
+                        filter: "contains",
+                        dataTextField: "nombre",
+                        dataValueField: "id",
+                        dataSource: d,
+                        index: 0,
+                        change: function (e) {
+
+                        }
+                    });
+                });
+
+            },
+
+            //Fecha
+            idfecha: "fecha_config",
+            get_create_fecha: function() {
+                $("#fecha_config").kendoDateTimePicker({
+                    value: new Date(),
+                    dateInput: true,
+                    format: "yyyy/MM/dd HH:mm:ss"
+                });
+            },
+
+            //Costo
+            idcosto: "costoIncidente",
+            get_create_costos: function() {
+                var _this = this;
+                $("#" + _this.idcosto).kendoNumericTextBox({ format: "c", decimals: 3 });
+            },
+            //Contacto vecino
+            idvecino: "txtContactoV",
+            get_contactovecino: function() {
+                var _this = this;
+                _this.customValidateOnKeypress(_this.idvecino, /^[0-9()-]+$/)
+            },
+
+            //TextArea
+            idTextArea: "txt_detallearea",
+            get_create_txtArea: function() {
+                var _this = this;
+                $("#" + _this.idTextArea).kendoTextArea({
+                    //label: "Detalle del evento:",
+                    rows: 4,
+                    maxLength: 1000,
+                    placeholder: ""
+                });
+            }
+        }
+    });
+
+    $.adGrupoDelictivo.init();
+    $.adGrupoDelictivo.dimensioncontrolllers();
+
+    var polygonos = [];
+    function createPolygon(arg) {
+        ClearPolygonos();
+        var polypath = [];
+
+        var bounds = new google.maps.LatLngBounds();
+        for(var i = arg.detalle.length; i--;) {
+            var ds = arg.detalle[i];
+            var pos = new google.maps.LatLng({ lat: ds.lat, lng: ds.lng });
+            bounds.extend(pos);
+            polypath.push(pos);
+        }
+
+        $.mapa_delictivo.map.fitBounds(bounds);
+        
+        var poly = new google.maps.Polygon({
+            map: $.mapa_delictivo.map,
+            paths: polypath,
+            strokeColor:"green",
+            strokeWeight: 3,
+            fillColor: "green"
+        });
+        polygonos.push(poly);
+    }
+
+    function ClearPolygonos() {
+        for(var i = polygonos.length; i--;) {
+            polygonos[i].setMap(null);
+        }
+    }
+</script>
+
+
+<script type="text/javascript">
+                //Tipos de estados
+                var tipo = 1;
+                function fn_DDLEstadoChange() {
+                        var estado = $("#DDLEstado").data("kendoDropDownList").value();
+                        if (estado == 'Pendiente' || estado == 'Consigna') {
+                            tipo = 1;
+                        }
+                        else {
+                            tipo = 2;
+                        }
+                        $("#DDLTipoInconvenientes").data("kendoDropDownList").dataSource.read();
+                    }
+
+                             
+                    $("#DDLEstado").kendoDropDownList({
+                    dataTextField: "Text",
+                    dataValueField: "Value",
+                        dataSource: [
+                                            
+                            {
+                                Text : "Pendiente",
+                                Value : "Pendiente"
+                            },
+                                {
+                                Text : "Consigna",
+                                Value : "Consigna"
+                            },
+                            {
+                                Text : "Finalizado",
+                            Value: "Finalizado"
+                            }
+
+                                        
+                        ],
+                        index: 0,
+                        change: fn_DDLEstadoChange,
+
+                    });
+
+                            
+                                
+                //Tipos de inconvenientes
+                function DDLTipoInconvenientes_DataBound(){
+                    $("#DDLTipoInconvenientes").data("kendoDropDownList").select(0);
+                }
+
+                $.get("adGruposDelictivos/getTipoInconvenientes", {tipo: tipo},  function(d) {
+                    $("#DDLTipoInconvenientes").kendoDropDownList({
+                        dataTextField: "descripcion",
+                        dataValueField: "id",
+                        dataSource: d,
+                        index: 0,
+                        change: fn_DDLEstadoChange,
+                        minLength: 2,
+                        databound: DDLTipoInconvenientes_DataBound
+                    });
+                });
+            </script>
+
+<script type="text/javascript">
+    var MKubicacion = null;
+    function fn_mostrarOcultarmarkerUbicacion(obj) {
+        if (MKubicacion === null)  {
+            MKubicacion = new google.maps.Marker({
+                map: $.mapa_delictivo.map,
+                position: $.mapa_delictivo.map.getCenter(),
+                draggable: true,
+                visible: false
+            });
+        }
+        if ($(obj).find("input").is(":checked")) {
+            MKubicacion.setVisible(true);
+            MKubicacion.setPosition($.mapa_delictivo.map.getCenter());
+        } else {
+            MKubicacion.setVisible(false);
+        }
+
+    }
+
+    function validarDatosDelictivos() {
+         var arg = {
+            companyid: $.main.companyid,
+            BD: $.main.BD,
+            userid: $.main.userid,
+
+            incidenteid: $("#ddltipoincidente").data("kendoDropDownList").value(),
+            motoristaid: $("#ddlmotoristas").data("kendoDropDownList").value(),
+            mobileid: $("#ddlvehiculos").data("kendoDropDownList").value().replace("m", ""),
+            // companyid AS INT,
+            geozonaid: $("#ddlzonasdelictivas").data("kendoDropDownList").value(),
+            fecha: moment($("#fecha_config").val()).format("YYYYMMDD HH:mm:ss"),
+            descripcion: $("#txt_detallearea").val(),
+            costo : String($("#costoIncidente").data("kendoNumericTextBox").value()),
+            longitud: MKubicacion === null ? 0 : MKubicacion.getPosition().lng(),
+            latitud: MKubicacion === null ? 0 : MKubicacion.getPosition().lat(),
+            rutaid: $("#ddlrutas").data("kendoDropDownList").value() === "" ? 0 : $("#ddlrutas").data("kendoDropDownList").value(),
+            contacto: $("#txtContactoV").val(),
+            estado: $("#DDLEstado").val(),
+            //Revisar acá
+            pagorentaid: 0 ,
+            fechaPagoRenta: moment().format("YYYYMMDD HH:mm:ss"),
+            estadoInconvenienteId: 0,
+            esTipoRenta: 0
+        }
+
+
+
+        if (arg.mobileid === "" || arg.mobileid === null || arg.mobileid === "0" || typeof arg.mobileid === "undefined") {
+            Swal.fire(
+                'Aviso',
+                'Debe de seleccionar al menos un vehículo',
+                'warning'
+            )
+            return false;
+        }
+
+        if (arg.motoristaid === "") {
+            Swal.fire(
+                'Aviso',
+                'Debe de asignar al menos a un motorista',
+                'warning'
+            )
+            return false;
+        }
+        if (arg.geozonaid === "") {
+            Swal.fire(
+                'Aviso',
+                'Debe de asignar al menos ana geozona',
+                'warning'
+            )
+            return false;
+        }
+
+
+        if (arg.descripcion.length < 10) {
+            Swal.fire(
+                'Aviso',
+                'El detalle es demasiado corto, debe agregar más palabras',
+                'warning'
+            )
+            return false;
+        }
+
+        if (arg.descripcion.latitud === 0) {
+            Swal.fire(
+                'Aviso',
+                'Debe agregar un punto en el mapa',
+                'warning'
+            )
+            return false;
+        }
+
+        return arg;
+    }
+
+    function ClearDatosDelictivos() {
+        $("#txt_detallearea").val("");
+    }
+
+    function Ingresar_DDLEventoZonaDelictiva() {
+      
+       var arg = validarDatosDelictivos();
+       if (arg !== false) {
+            $("#btn_agrgarDelictivos").attr("onclick", "");
+            $.post("adGruposDelictivos/agegarincidenteDelictivo", arg, function(d) {
+                Swal.fire(
+                    'Aviso',
+                    'Datos Agregados correctamente',
+                    'success'
+                )
+                console.log(d);
+            }).fail(function() {
+                Swal.fire(
+                    'Aviso',
+                    'Ha ocurrido un error',
+                    'error'
+                )
+            }).always(function() {
+                get_Grid__configEventosDelictivos();
+                $("#btn_agrgarDelictivos").attr("onclick", "Ingresar_DDLEventoZonaDelictiva();")
+            });
+       }
+    }
+
+
+</script>

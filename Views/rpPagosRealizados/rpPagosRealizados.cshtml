@@ -1,0 +1,293 @@
+﻿
+@{
+    Layout = null;
+}
+<div class="card w-100 h-100">
+    <div class="card-header">
+        <h5 class="card-title">
+            Reporte de Pagos Realizados
+
+        </h5>
+        <ul class="nav nav-tabs card-header-tabs" data-bs-tabs="tabs">
+            <li class="nav-item">
+                <a class="nav-link active" aria-current="true" data-bs-toggle="tab" href="#tab1">Tabla de Datos</a>
+            </li>
+        </ul>
+    </div>
+    <div class="card-body tab-content">
+        <div class="tab-pane active" id="tab1">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="row">
+                        <div class="col-12">
+                            <label style="display: inline-block;">Inicio</label>
+                            <input id="fecha_inirp" title="Fecha" />
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-12">
+                            <label style="display: inline-block;">Fin</label>
+                            <input id="fecha_finrp" title="Fecha" />
+                        </div>
+                    </div>
+
+                    <div class="row mt-4">
+                        <div style="text-align:right;" class="col-12 mt-2 mb-4">
+                            <button type="button" class="btn btn-sm btn-primary w-100" onclick="get_Grid_pagoRealizados();">Generar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row ">
+                <div class="col-12">
+                    @*<button type="button" id="btn_agrgarDelictivos" class="btn btn-primary w-100" onclick="Ingresar_DDLEventoZonaDelictiva();">Agregar</button>*@
+                    <div id="Grid_pagoRealizados"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+<script id="template_pagoRealizados" type="text/x-kendo-template">
+    <button type="button" class="k-grid-excel k-button k-button-md k-rounded-md k-button-solid k-button-solid-base"><span class="k-icon k-i-file-excel k-button-icon"></span><span class="k-button-text">Exportar a Excel</span></button>
+    <button type="button" class="k-grid-pdf k-button k-button-md k-rounded-md k-button-solid k-button-solid-base"><span class="k-icon k-i-file-pdf k-button-icon"></span><span class="k-button-text">Exportar a PDF</span></button>
+    <span class="k-spacer"></span>
+    <span class="k-searchbox k-input k-input-md k-rounded-md k-input-solid k-grid-search">
+        <span class="k-input-icon k-icon k-i-search"></span><input autocomplete="off" placeholder="Buscar..." title="Search..." class="k-input-inner" />
+    </span>
+</script>
+
+<script type="text/javascript">
+
+    function get_Grid_pagoRealizados() {
+        kendo.ui.progress($("[id='Grid_pagoRealizados']"), true);
+        var arg = {
+            companyid: $.main.companyid,
+            BD: $.main.BD,
+            userid: $.main.userid,
+            fini: moment($("#fecha_inirp").val()).format("YYYYMMDD HH:mm:ss"),
+            ffin: moment($("#fecha_finrp").val()).format("YYYYMMDD HH:mm:ss")
+        };
+        $.get("rpPagosRealizados/GetPagosRealizados", arg, function (datos) {
+            var d = datos.r1;
+            //Convirtiendo a tipo DateTime en js para que sepuedan hacer bien los filtros de lo contrario mostraria error
+            for (var i = 0, len = d.length; i < len; i++) {
+                d[i]["fechageneracion"] = moment(d[i]["fechageneracion"])._d;
+            }
+            create_Grid_pagoRealizados(d);
+            if (!d.length) {
+                Swal.fire('No hay datos que mostrar!', '', 'warning')
+            }
+        }).always(function () {
+            kendo.ui.progress($("[id='Grid_pagoRealizados']"), false);
+        });
+    }
+
+
+    var Grid_pagoRealizados_dataitem = [];
+    function create_Grid_pagoRealizados(datos) {
+        $("[id='Grid_pagoRealizados']").html("");
+        $("[id='Grid_pagoRealizados']").kendoGrid({
+            mobile: true,
+            //toolbar: ["excel", "pdf", "search"],
+            toolbar: [
+                { template: kendo.template($("[id='template_pagoRealizados']").html()) }
+            ],
+            pdf: {
+                allPages: true,
+                avoidLinks: true,
+                paperSize: "A4",
+                landscape: true,
+                repeatHeaders: true,
+                margin: { top: "2cm", left: "1cm", right: "1cm", bottom: "1cm" },
+                scale: 0.8,
+                fileName: "pagoRealizados_" + moment("YYYYMMDD_HHmmss") + ".pdf"
+            },
+            excel: {
+                fileName: "pagoRealizados_" + moment("YYYYMMDD_HHmmss") + ".xlsx",
+                filterable: true,
+                allPages: true
+            },
+            dataSource: {
+                pageSize: 50,
+                schema: {
+                    model: {
+                        fields: {
+                            
+                            ///fechageneracion: { type: "date" },
+                            motorista: { type: "string" },
+                            placa: { type: "string" },
+                            alias: { type: "string" },
+                            geozona: { type: "string" },
+                            tipollamada: { type: "string" },
+                            fecha: { type: "date" },
+                            descripcion: { type: "string" },
+                            costo: { type: "number" },
+                            lng: { type: "number" },
+                            lat: { type: "number" },
+                            ruta: { type: "string" },
+                            contacto: { type: "string" },
+                            estado: { type: "string" },
+                            mobileapoyo: { type: "string" },
+                            fechapagorenta: { type: "date" },
+                            tipopagorenta: { type: "string" },
+                            incidente: { type: "string" },
+                            inconveneniente: { type: "string" }
+                        }
+                    }
+                }
+            },
+            filterable: {
+                extra: false
+            },
+            filterable: false,
+            height: 450,
+            sortable: true,
+            groupable: false,
+            columnMenu: false,
+            reorderable: true,
+            resizable: true,
+            scrollable: true,
+            pageable: {
+                allPages: true,
+                pageSizes: true,
+                previousNext: true,
+                input: false,
+                numeric: false,
+                refresh: false,
+                info: true
+            },
+            selectable: "single, row",
+            change: function (e) {
+                Grid_pagoRealizados_dataitem = e !== null ? e.sender.dataItem(e.sender.select()) : null;
+            },
+            dataBound: function () {
+                var data = [];
+                var grid = this;
+                var dataSource = grid.dataSource;
+                var allData = dataSource.data();
+                var filters = dataSource.filter();
+                var query = new kendo.data.Query(allData);
+                data = query.filter(filters).data;
+
+                $("[id='Grid_pagoRealizados'] .k-grid-content tbody tr:not(.k-grouping-row)").dblclick(function (e) {
+                    if (!$(e.target).is(":input")) {
+                        var ds = Grid_pagoRealizados_dataitem;
+
+                    }
+                });
+
+            },
+            columns:
+                [
+                  /*
+                            motorista: { type: "string" },
+                            placa: { type: "string" },
+                            alias: { type: "string" },
+                            geozona: { type: "string" },
+                            tipollamada: { type: "string" },
+                            fecha: { type: "date" },
+                            descripcion: { type: "string" },
+                            costo: { type: "number" },
+                            lng: { type: "number" },
+                            lat: { type: "number" },
+                            ruta: { type: "string" },
+                            contacto: { type: "string" },
+                            estado: { type: "string" },
+                            mobileapoyo: { type: "string" },
+                            fechapagorenta: { type: "date" },
+                            tipopagorenta: { type: "string" },
+                            incidente: { type: "string" },
+                            inconveneniente: { type: "string" },
+                  */
+                    {
+                        field: "fecha",
+                        title: "Fecha Generado",
+                        format: "{0:yyyy-MM-dd HH:mm:ss}",
+                        width: 180
+                    },
+                    {
+                        field: "motorista",
+                        title: "Motorista",
+                        width: 120
+                    },                
+                    {
+                        field: "placa",
+                        title: "Placa",
+                        width: 150
+                    },
+                    {
+                        vehiculo: "alias",
+                        title: "Alias",
+                        width: 120
+                    },
+                    {
+                        field: "geozona",
+                        title: "Geozona",
+                        width: 120
+                    },
+                    {
+                        field: "costo",
+                        title: "Costo",
+                        width: 150
+                    },
+                    {
+                        field: "tipollamada",
+                        title: "Tipo Llamada",
+                        width: 150
+                    },
+                    {
+                        field: "ruta",
+                        title: "Ruta",
+                        width: 180
+                    },
+
+                    {
+                        field: "contacto",
+                        title: "Contacto",
+                        width: 180
+                    },
+                    {
+                        field: "tipopagorenta",
+                        title: "Tipos Pago Renta",
+                        width: 500
+                    },
+                    {
+                        field: "estado",
+                        title: "Estado",
+                        width: 500
+                    },
+{
+                        field: "inconveneniente",
+                        title: "Inconveniente",
+                        width: 500
+                    },
+
+                ]
+        });
+        $("[id='Grid_pagoRealizados']").data("kendoGrid").dataSource.data(datos);
+    }
+    create_Grid_pagoRealizados([]);
+
+    function crearFechas() {
+        $("#fecha_inirp").kendoDateTimePicker({
+            value: moment().startOf('year')._d,
+            dateInput: true,
+            format: "yyyy/MM/dd HH:mm:ss"
+        });
+        $("#fecha_finrp").kendoDateTimePicker({
+            value: moment().endOf('year')._d,
+            dateInput: true,
+            format: "yyyy/MM/dd HH:mm:ss"
+        });
+    }
+    crearFechas();
+
+</script>
+

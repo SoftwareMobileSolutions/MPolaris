@@ -1,0 +1,319 @@
+﻿<style type="text/css">
+    .modal-backdrop.fade.show {
+        display: none;
+    }
+
+    .shadow-ex {
+        box-shadow: 0 1rem 15rem rgba(0,0,0,1) !important;
+    }
+</style>
+
+<div class="modal fade" id="mp_modalgrideventos" tabindex="-1" role="dialog" aria-labelledby="" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content shadow-ex">
+      <div class="modal-header">
+        <h5 class="modal-title"> Eventos Delictivos</h5>
+      </div>
+      <div class="modal-body">
+        <div id="Grid_rpeventosdelictivos"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="$('#mp_modalgrideventos').modal('hide');">Cerrar</button>
+        @*<button type="button" class="btn btn-primary">Save changes</button>*@
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<script id="template_rpeventosdelictivos" type="text/x-kendo-template">
+    <button type="button" class="k-grid-excel k-button k-button-md k-rounded-md k-button-solid k-button-solid-base"><span class="k-icon k-i-file-excel k-button-icon"></span><span class="k-button-text">Exportar a Excel</span></button>
+    <button type="button" class="k-grid-pdf k-button k-button-md k-rounded-md k-button-solid k-button-solid-base"><span class="k-icon k-i-file-pdf k-button-icon"></span><span class="k-button-text">Exportar a PDF</span></button>
+    <span class="k-spacer"></span>
+    <span class="k-searchbox k-input k-input-md k-rounded-md k-input-solid k-grid-search">
+        <span class="k-input-icon k-icon k-i-search"></span><input autocomplete="off" placeholder="Buscar..." title="Search..." class="k-input-inner" />
+    </span>
+</script>
+
+<script type="text/javascript">
+
+    function get_Grid_rpeventosdelictivos() {
+        kendo.ui.progress($("[id='Grid_rpeventosdelictivos']"), true);
+        var arg = {
+            companyid: $.main.companyid,
+            BD: $.main.BD,
+            userid: $.main.userid,
+            fechai: moment($("#fecha_inirp").val()).format("YYYYMMDD HH:mm:ss"),
+            fechafin: moment($("#fecha_finrp").val()).format("YYYYMMDD HH:mm:ss"),
+            geozonasid: $("#DDL_geoTree").data("kendoDropDownTree").value().join(","),
+            mobilesid: TreeMobiles.join(","),
+            tipoincidentesid: $("#DDL_incidentesTree").data("kendoDropDownTree").value().join(","),
+            motoristasid: $("#DDL_motoristaTree").data("kendoDropDownTree").value().join(",")
+        };
+
+        if (arg.geozonasid === "") {
+            Swal.fire(
+                'AVISO',
+                'Debe seleccionar al menos una geozona',
+                'warning'
+            )
+            return false;
+        }
+        if (arg.mobilesid === "") {
+            Swal.fire(
+                'AVISO',
+                'Debe seleccionar al menos un Vehículo',
+                'warning'
+            )
+            return false;
+        } 
+        if (arg.motoristasid === "") {
+            Swal.fire(
+                'AVISO',
+                'Debe seleccionar al menos un Motorista',
+                'warning'
+            )
+            return false;
+        }
+        if (arg.tipoincidentesid === "") {
+            Swal.fire(
+                'AVISO',
+                'Debe seleccionar al menos un Incidente',
+                'warning'
+            )
+            return false;
+        }
+
+        $.post("rpEventosZonasDelictivas/getEventosGrid", arg, function (d) {
+            if (!d.length) {
+                Swal.fire('No hay datos que mostrar!', '', 'warning');
+                return false;
+            }
+
+            //Convirtiendo a tipo DateTime en js para que sepuedan hacer bien los filtros de lo contrario mostraria error
+            for (var i = 0, len = d.length; i < len; i++) {
+                d[i]["fechageneracion"] = moment(d[i]["fechageneracion"])._d;
+            }
+            create_Grid_rpeventosdelictivos(d);
+            $('#mp_modalgrideventos').modal('show');
+            setTimeout(function () {
+                $("[id='Grid_rpeventosdelictivos']").data("kendoGrid").refresh();
+            }, 500);
+               
+        }).always(function () {
+            kendo.ui.progress($("[id='Grid_rpeventosdelictivos']"), false);
+        });
+    }
+
+    var Grid_rpeventosdelictivos_dataitem = [];
+    function create_Grid_rpeventosdelictivos(datos) {
+        $("[id='Grid_rpeventosdelictivos']").html("");
+        $("[id='Grid_rpeventosdelictivos']").kendoGrid({
+            mobile: true,
+            //toolbar: ["excel", "pdf", "search"],
+            toolbar: [
+                { template: kendo.template($("[id='template_rpeventosdelictivos']").html()) }
+            ],
+            pdf: {
+                allPages: true,
+                avoidLinks: true,
+                paperSize: "A4",
+                landscape: true,
+                repeatHeaders: true,
+                margin: { top: "2cm", left: "1cm", right: "1cm", bottom: "1cm" },
+                scale: 0.8,
+                fileName: "rpeventosdelictivos_" + moment("YYYYMMDD_HHmmss") + ".pdf"
+            },
+            excel: {
+                fileName: "rpeventosdelictivos_" + moment("YYYYMMDD_HHmmss") + ".xlsx",
+                filterable: true,
+                allPages: true
+            },
+            dataSource: {
+                pageSize: 50,
+                schema: {
+                    model: {
+                        fields: {
+                            grupo: { type: "string" },
+                            subgrupo: { type: "string" },
+                            subflota: { type: "string" },
+                            alias: { type: "string" },
+                            placa: { type: "string" },
+                            tipoVehiculo: { type: "string" },
+                            eventoid: { type: "number" },
+                            fecha: { type: "date" },
+                            incidenteid: { type: "number" },
+                            costo: { type: "number" },
+                            incidentenombre: { type: "string" },
+                            descripcion: { type: "string" },
+                            motoristaid: { type: "number" },
+                            nombremotorista: { type: "string" },
+                            telefonomotorista: { type: "string" },
+                            mobileid: { type: "number" },
+                            subflotaid: { type: "number" },
+                            geozonaid: { type: "number" },
+                            nombregeozona: { type: "string" },
+                            idtipogd: { type: "number" },
+                            tipogd: { type: "string" }
+                        }
+                    }
+                }
+            },
+            filterable: {
+                extra: false
+            },
+            filterable: false,
+            height: 450,
+            sortable: true,
+            groupable: false,
+            columnMenu: false,
+            reorderable: true,
+            resizable: true,
+            scrollable: true,
+            pageable: {
+                allPages: true,
+                pageSizes: true,
+                previousNext: true,
+                input: false,
+                numeric: false,
+                refresh: false,
+                info: true
+            },
+            selectable: "single, row",
+            change: function (e) {
+                Grid_rpeventosdelictivos_dataitem = e !== null ? e.sender.dataItem(e.sender.select()) : null;
+            },
+            dataBound: function () {
+                var data = [];
+                var grid = this;
+                var dataSource = grid.dataSource;
+                var allData = dataSource.data();
+                var filters = dataSource.filter();
+                var query = new kendo.data.Query(allData);
+                data = query.filter(filters).data;
+
+                $("[id='Grid_rpeventosdelictivos'] .k-grid-content tbody tr:not(.k-grouping-row)").dblclick(function (e) {
+                    if (!$(e.target).is(":input")) {
+                        var ds = Grid_rpeventosdelictivos_dataitem;
+
+                    }
+                });
+
+            },
+            columns:
+
+            /*
+                                grupo: { type: "string" },
+                                subgrupo: { type: "string" },
+                                subflota: { type: "string" },
+                                alias: { type: "string" },
+                                placa: { type: "string" },
+                                tipoVehiculo: { type: "string" },
+                                eventoid: { type: "number" },
+                                fecha: { type: "date" },
+                                incidenteid: { type: "number" },
+                                costo: { type: "number" },
+                                incidentenombre: { type: "string" },
+                                descripcion: { type: "string" },
+                                motoristaid: { type: "number" },
+                                nombremotorista: { type: "string" },
+                                telefonomotorista: { type: "string" },
+                                mobileid: { type: "number" },
+                                subflotaid: { type: "number" },
+                                geozonaid: { type: "number" },
+                                nombregeozona: { type: "string" },
+                                idtipogd: { type: "number" },
+                                tipogd: { type: "string" }
+            
+            */
+
+                [
+                    {
+                        field: "grupo",
+                        title: "Grupo",
+                        width: 120
+                    },
+                    {
+                        field: "subgrupo",
+                        title: "Subgrupo",
+                        width: 120
+                    },
+                    {
+                        field: "subflota",
+                        title: "Subflota",
+                        width: 120
+                    },
+                    {
+                        field: "alias",
+                        title: "Alias",
+                        width: 120
+                    },
+                    {
+                        field: "placa",
+                        title: "Placa",
+                        width: 120
+                    },
+                    {
+                        field: "tipoVehiculo",
+                        title: "Tipo de Vehículo",
+                        width: 120
+                    },
+                    {
+                        field: "fecha",
+                        title: "Fecha",
+                        format: "{0:yyyy-MM-dd HH:mm:ss}",
+                        width: 120
+                    },
+                    {
+                        field: "incidentenombre",
+                        title: "Incidente",
+                        width: 120
+                    },
+                    {
+                        field: "costo",
+                        title: "Costo",
+                        width: 120
+                    },
+                   
+                    {
+                        field: "nombremotorista",
+                        title: "Motorista",
+                        width: 120
+                    },
+                    {
+                        field: "nombregeozona",
+                        title: "Geozona",
+                        width: 120
+                    },
+                    {
+                        field: "tipogd",
+                        title: "Grupo Delictivo",
+                        width: 120
+                    },
+                     {
+                        field: "descripcion",
+                        title: "Descripción",
+                        width: 500
+                    }
+                ]
+        });
+        $("[id='Grid_rpeventosdelictivos']").data("kendoGrid").dataSource.data(datos);
+    }
+    create_Grid_rpeventosdelictivos([]);
+
+    function crearFechas() {
+        $("#fecha_inirp").kendoDateTimePicker({
+            value: moment().startOf('year')._d,
+            dateInput: true,
+            format: "yyyy/MM/dd HH:mm:ss"
+        });
+        $("#fecha_finrp").kendoDateTimePicker({
+            value: moment().endOf('year')._d,
+            dateInput: true,
+            format: "yyyy/MM/dd HH:mm:ss"
+        });
+    }
+    crearFechas();
+
+</script>
