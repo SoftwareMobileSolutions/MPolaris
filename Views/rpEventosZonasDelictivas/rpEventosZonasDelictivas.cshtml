@@ -73,7 +73,7 @@
                         </div>
                     </div>
 
-                    <div class="row">
+                    @*<div class="row">
                         <div class="col-12">
                             <label style="display: inline-block;" class="bold">Geozonas</label>
                             <input id="DDL_geoTree" style="width: 100%;" />
@@ -92,7 +92,7 @@
                             <label style="display: inline-block;" class="bold">Tipo Incidentes</label>
                             <input id="DDL_incidentesTree" style="width: 100%;" />
                         </div>
-                    </div>
+                    </div>*@
                 </div>
             </div>
             <div class="row mt-4">
@@ -207,18 +207,18 @@
     }
     createDDL_geoTree();
 
-    function getGeozonas() {
-        var arg = {
-            companyid: $.main.companyid,
-            BD: $.main.BD,
-            userid: $.main.userid
-        };
-        $.get("rpEventosZonasDelictivas/Get_Geozonas", arg, function (d) {
-            $("#DDL_geoTree").data("kendoDropDownTree").dataSource.data(d);
-            //fn_generarDDLGrid(d);
-        });
-    }
-    getGeozonas();
+    //function getGeozonas() {
+    //    var arg = {
+    //        companyid: $.main.companyid,
+    //        BD: $.main.BD,
+    //        userid: $.main.userid
+    //    };
+    //    $.get("rpEventosZonasDelictivas/Get_Geozonas", arg, function (d) {
+    //        //$("#DDL_geoTree").data("kendoDropDownTree").dataSource.data(d);
+    //        //fn_generarDDLGrid(d);
+    //    });
+    //}
+    //getGeozonas();
 
     //MOTORISTA
     function CreateDDL_motoristaTree() {
@@ -244,18 +244,18 @@
     }
     CreateDDL_motoristaTree();
 
-    function getMotorista() {
-        var arg = {
-            companyid: $.main.companyid,
-            BD: $.main.BD,
-            userid: $.main.userid
-        };
-        $.get("rpEventosZonasDelictivas/Get_Motoristas", arg, function (d) {
-//            console.log(d);
-            $("#DDL_motoristaTree").data("kendoDropDownTree").dataSource.data(d);
-        });
-    }
-    getMotorista();
+//    function getMotorista() {
+//        var arg = {
+//            companyid: $.main.companyid,
+//            BD: $.main.BD,
+//            userid: $.main.userid
+//        };
+//        $.get("rpEventosZonasDelictivas/Get_Motoristas", arg, function (d) {
+////            console.log(d);
+//            //$("#DDL_motoristaTree").data("kendoDropDownTree").dataSource.data(d);
+//        });
+//    }
+//    getMotorista();
 
     //Incidentes
     function CreateDDL_incidentesTree() {
@@ -281,18 +281,18 @@
     }
     CreateDDL_incidentesTree();
 
-    function getIncidentes() {
-        var arg = {
-            companyid: $.main.companyid,
-            BD: $.main.BD,
-            userid: $.main.userid
-        };
-        $.get("rpEventosZonasDelictivas/getincidentescat", arg, function (d) {
-//            console.log(d);
-            $("#DDL_incidentesTree").data("kendoDropDownTree").dataSource.data(d);
-        });
-    }
-    getIncidentes();
+//    function getIncidentes() {
+//        var arg = {
+//            companyid: $.main.companyid,
+//            BD: $.main.BD,
+//            userid: $.main.userid
+//        };
+//        $.get("rpEventosZonasDelictivas/getincidentescat", arg, function (d) {
+////            console.log(d);
+//            //$("#DDL_incidentesTree").data("kendoDropDownTree").dataSource.data(d);
+//        });
+//    }
+//    getIncidentes();
 
     function reizeDivs() {
         $("#div_scrollcontainter").height($(window).height()-180);

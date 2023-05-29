@@ -7,6 +7,6 @@ namespace mpolaris.Interfaces
 {
     public interface IrpLlamadas
     {
-        Task<IEnumerable<rpLlamadasRealizadasModel>> GetLlamadasRealizadas(int BD, string fini, string ffin, int companyid);
+        Task<IEnumerable<rpLlamadasRealizadasModel>> GetLlamadasRealizadas(int BD, string fini, string ffin, int companyid, int tipoLlamada);
     }
 }

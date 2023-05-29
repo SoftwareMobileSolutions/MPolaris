@@ -25,18 +25,18 @@ namespace mpolaris.Services
             _context2 = context2;
         }
 
-        public async Task<IEnumerable<rpEventosDelictivosModel.griddelictivo>> Get_GridrpDelictivos(int BD, int companyid, string fechai, string fechafin, string geozonasid, string mobilesid, string tipoincidentesid, string motoristasid, int userid)
+        public async Task<IEnumerable<rpEventosDelictivosModel.griddelictivo>> Get_GridrpDelictivos(int BD, int companyid, string fechai, string fechafin, /*string geozonasid,*/ string mobilesid, /*string tipoincidentesid, string motoristasid,*/ int userid)
         {
             IEnumerable<rpEventosDelictivosModel.griddelictivo> data;
             var conn = BD == 0 ? _context.CreateConnection() : _context2.CreateConnection();
             using (conn)
             {
-                string query = @"exec mpolaris_ObtenerReporteEventosDelictivos @companyid, @fechai, @fechafin, @geozonasid, @mobilesid, @tipoincidentesid, @motoristasid, @userid";
+                string query = @"exec mpolaris_ObtenerReporteEventosDelictivosMobile @companyid, @fechai, @fechafin, @mobilesid, @userid";
                 if (conn.State == ConnectionState.Closed)
                 {
                     conn.Open();
                 }
-                data = await conn.QueryAsync<rpEventosDelictivosModel.griddelictivo>(query, new { companyid, fechai, fechafin, geozonasid, mobilesid, tipoincidentesid, motoristasid, userid }, commandType: CommandType.Text);
+                data = await conn.QueryAsync<rpEventosDelictivosModel.griddelictivo>(query, new { companyid, fechai, fechafin, /*geozonasid,*/ mobilesid, /*tipoincidentesid, motoristasid,*/ userid }, commandType: CommandType.Text);
                 if (conn.State == ConnectionState.Open)
                 {
                     conn.Close();

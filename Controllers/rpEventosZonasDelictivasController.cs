@@ -238,9 +238,9 @@ namespace mpolaris.Controllers
         }
 
         //Grid
-        public async Task<JsonResult> getEventosGrid(int BD, int companyid, string fechai, string fechafin, string geozonasid, string mobilesid, string tipoincidentesid, string motoristasid, int userid)
+        public async Task<JsonResult> getEventosGrid(int BD, int companyid, string fechai, string fechafin, /*string geozonasid,*/ string mobilesid, /*string tipoincidentesid,*/ string motoristasid, int userid)
         {
-            var data = await IrpEventosDelictivos.Get_GridrpDelictivos(BD, companyid, fechai, fechafin, geozonasid, mobilesid, tipoincidentesid, motoristasid, userid);
+            var data = await IrpEventosDelictivos.Get_GridrpDelictivos(BD, companyid, fechai, fechafin, /*geozonasid,*/ mobilesid, /*tipoincidentesid, motoristasid,*/ userid);
             return await Task.Run(() =>
             {
                 return Json(data);

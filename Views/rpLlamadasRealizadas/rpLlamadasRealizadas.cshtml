@@ -28,6 +28,17 @@
                         </div>
                     </div>
 
+                    <div class="row">
+                        <div class="col-12 lf">
+                            Tipo Llamada:
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <input id="ddlTipoLlamada" class="" style="width: 100%;" />
+                        </div>
+                    </div>
+
                     <div class="row mt-4">
                         <div style="text-align:right;" class="col-12 mt-2 mb-4">
                             <button type="button" class="btn btn-sm btn-primary w-100" onclick="get_Grid_llamadasRealizadas();">Generar</button>
@@ -68,7 +79,8 @@
             BD: $.main.BD,
             userid: $.main.userid,
             fini: moment($("#fecha_inirp").val()).format("YYYYMMDD HH:mm:ss"),
-            ffin: moment($("#fecha_finrp").val()).format("YYYYMMDD HH:mm:ss")
+            ffin: moment($("#fecha_finrp").val()).format("YYYYMMDD HH:mm:ss"),
+            tipoLlamada: $("#ddlTipoLlamada").data("kendoDropDownList").value()
         };
         $.post("rpLlamadasRealizadas/GetLlamadasRealizadas", arg, function (d) {
             //Convirtiendo a tipo DateTime en js para que sepuedan hacer bien los filtros de lo contrario mostraria error
@@ -252,5 +264,30 @@
     }
     crearFechas();
 
+    $.extend({
+        rpLlamada: {
+            id_ddlTipoLlamada: "ddlTipoLlamada",
+            get_create_tipoLlamada: function () {
+                var $this = this;
+                var arg = {
+                    companyid: $.main.companyid,
+                    BD: $.main.BD,
+                    userid: $.main.userid
+                };
+
+                var data = [{ id: 0, nombre: "Chequeo" }, { id: 1, nombre: "Llamada" }]
+
+                $("#" + $this.id_ddlTipoLlamada).kendoDropDownList({
+                    filter: "contains",
+                    dataTextField: "nombre",
+                    dataValueField: "id",
+                    dataSource: data,
+                    index: 0,
+                });
+            }
+        }
+    });
+
+    $.rpLlamada.get_create_tipoLlamada();
 </script>
 

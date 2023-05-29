@@ -26,18 +26,18 @@ namespace mpolaris.Services
         }
 
         //DDL Tipo incidente
-        public async Task<IEnumerable<rpLlamadasRealizadasModel>> GetLlamadasRealizadas(int BD, string fini, string ffin, int companyid)
+        public async Task<IEnumerable<rpLlamadasRealizadasModel>> GetLlamadasRealizadas(int BD, string fini, string ffin, int companyid, int tipoLlamada)
         {
             IEnumerable<rpLlamadasRealizadasModel> data;
             var conn = BD == 0 ? _context.CreateConnection() : _context2.CreateConnection();
             using (conn)
             {
-                string query = @"exec mpolaris_llamadasrealizadas_mobile @fini, @ffin, @companyid";
+                string query = @"exec mpolaris_llamadasrealizadasMobile @fini, @ffin, @companyid, @tipoLlamada";
                 if (conn.State == ConnectionState.Closed)
                 {
                     conn.Open();
                 }
-                data = await conn.QueryAsync<rpLlamadasRealizadasModel>(query, new { fini, ffin, companyid }, commandType: CommandType.Text);
+                data = await conn.QueryAsync<rpLlamadasRealizadasModel>(query, new { fini, ffin, companyid, tipoLlamada }, commandType: CommandType.Text);
                 if (conn.State == ConnectionState.Open)
                 {
                     conn.Close();

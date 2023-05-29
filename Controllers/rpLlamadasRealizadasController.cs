@@ -23,9 +23,9 @@ namespace mpolaris.Controllers
             });
         }
 
-        public async Task<JsonResult> GetLlamadasRealizadas(int BD, string fini, string ffin, int companyid)
+        public async Task<JsonResult> GetLlamadasRealizadas(int BD, string fini, string ffin, int companyid, int tipoLlamada)
         {
-            var data = await IrpLlamadas.GetLlamadasRealizadas(BD, fini, ffin, companyid);
+            var data = await IrpLlamadas.GetLlamadasRealizadas(BD, fini, ffin, companyid, tipoLlamada);
             return await Task.Run(() =>
             {
                 return Json(data);
